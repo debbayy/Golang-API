@@ -14,7 +14,7 @@ type Karyawan struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
-	telp	 int 	`json:"telp"`
+	Telp	 string 	`json:"telp"`
 }
 
 func dbConn() (db *sql.DB) {
@@ -37,7 +37,7 @@ func getKaryawan(w http.ResponseWriter, r *http.Request) {
 
 	var karyawan Karyawan
 
-	err := db.QueryRow("SELECT id, name, email, password, telp FROM karyawan WHERE id = ?", id).Scan(&karyawan.ID, &karyawan.Name, &karyawan.Email, &karyawan.Password, &karyawan.telp)
+	err := db.QueryRow("SELECT id, name, email, password, telp FROM karyawan WHERE id = ?", id).Scan(&karyawan.ID, &karyawan.Name, &karyawan.Email, &karyawan.Password, &karyawan.Telp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -59,7 +59,7 @@ func getKaryawans(w http.ResponseWriter, r *http.Request) {
 	var karyawanList []Karyawan
 	for rows.Next() {
 		var karyawan Karyawan
-		err := rows.Scan(&karyawan.ID, &karyawan.Name, &karyawan.Email, &karyawan.Password)
+		err := rows.Scan(&karyawan.ID, &karyawan.Name, &karyawan.Email, &karyawan.Password, &karyawan.Telp)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -96,7 +96,7 @@ func newKaryawan(w http.ResponseWriter, r *http.Request) {
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(karyawan.Name, karyawan.Email, karyawan.Password)
+	result, err := stmt.Exec(karyawan.Name, karyawan.Email, karyawan.Password, karyawan.Telp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
