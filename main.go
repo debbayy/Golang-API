@@ -14,7 +14,7 @@ type Karyawan struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
-	Telp	 string `json:"telp"`
+	Telp     string `json:"telp"`
 }
 
 func dbConn() (db *sql.DB) {
@@ -76,7 +76,6 @@ func getKaryawans(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(karyawanList)
 }
 
-
 func newKaryawan(w http.ResponseWriter, r *http.Request) {
 	db := dbConn()
 	defer db.Close()
@@ -113,7 +112,6 @@ func newKaryawan(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(karyawan)
 }
 
-
 func main() {
 	http.HandleFunc("/karyawan", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -136,6 +134,6 @@ func main() {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
-		
+
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

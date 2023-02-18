@@ -8,10 +8,11 @@ import (
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/google/uuid"
 )
 
 type Karyawan struct {
-	ID       int    `json:"id"`
+	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -69,26 +70,26 @@ func (kh *KaryawanHandler) newKaryawan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stmt, err := kh.db.Prepare("INSERT INTO karyawan (name, email, password,telp) VALUES (?, ?, ?,	?	)")
+	karyawan.ID = uuid.New().String() // generate new UUID
+
+	stmt, err := kh.db.Prepare("INSERT INTO karyawan (id, name, email, password, telp) VALUES (?, ?, ?, ?, ?)")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(karyawan.Name, karyawan.Email, karyawan.Password, karyawan.Telp)
+	result, err := stmt.Exec(karyawan.ID, karyawan.Name, karyawan.Email, karyawan.Password, karyawan.Telp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	newID, err := result.LastInsertId()
+	_, err = result.RowsAffected()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	karyawan.ID = int(newID)
 
 	json.NewEncoder(w).Encode(karyawan)
 }
@@ -97,10 +98,8 @@ func (kh *KaryawanHandler) getKaryawans(w http.ResponseWriter, r *http.Request) 
 	fmt.Println("masuk")
 
 	rows, err := kh.db.Query("SELECT * from karyawan")
-	fmt.Println(err, "ini error 1")
 
 	if err != nil {
-		fmt.Println("masuk nill")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -108,7 +107,6 @@ func (kh *KaryawanHandler) getKaryawans(w http.ResponseWriter, r *http.Request) 
 	var karyawanList []Karyawan
 	for rows.Next() {
 		var karyawan Karyawan
-		fmt.Println(karyawan, "ini apaaan sad karyaq=wasa")
 		err := rows.Scan(&karyawan.ID, &karyawan.Name, &karyawan.Email, &karyawan.Password, &karyawan.Telp)
 
 		if err != nil {
