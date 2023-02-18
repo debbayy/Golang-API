@@ -14,7 +14,7 @@ type Karyawan struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
-	Telp	 string 	`json:"telp"`
+	Telp	 string `json:"telp"`
 }
 
 func dbConn() (db *sql.DB) {
@@ -116,6 +116,7 @@ func newKaryawan(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/karyawan", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case "GET":
 			getKaryawan(w, r)
@@ -127,6 +128,7 @@ func main() {
 	})
 	//get all data karyawan
 	http.HandleFunc("/karyawans", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case "GET":
 			getKaryawans(w, r)
